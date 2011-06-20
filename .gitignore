@@ -1,0 +1,11 @@
+*~
+*.o
+*.swp
+*.zip
+*.gz
+*.bz2
+*.tbz2
+*.tgz
+*.Z
+*.obj
+*.exe
