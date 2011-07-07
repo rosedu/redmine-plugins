@@ -1,0 +1,20 @@
+<%#= debug new_project_file_path %>
+<%#= debug new_project_upload_path %>
+
+<h2><%=  "Uploads" %>
+<div style="float:right;">
+<div class="contextual">
+<%= link_to( l(:label_attachment_new), new_project_upload_path(@project), :class => 'icon icon-add') %>
+</div>
+</h2>
+
+<% delete_allowed = User.current.allowed_to?(:manage_files, @project) %>
+
+
+
+<%#= debug User.current -%>
+
+<% #= debug @uploads %>
+<% #= @uploads.inspect %>
+
+

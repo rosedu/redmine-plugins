@@ -1,0 +1,16 @@
+<h2>Uploads</h2>
+<h6>Uploads #2</h6>
+<% @uploads.each do |upload| %>
+  <p>
+
+<!--  <%= debug upload %> -->
+
+  <%= link_to upload[:file_path], {:action => 'show_files', :id => upload[:id]}, :method => :get %>
+  <br>
+  Created By :<%= upload[:id] %>
+  <%= upload[:created_at].to_s %>
+  <%= upload[:updated_at].to_s %>
+
+  <hr/>
+  </p>
+<% end %>

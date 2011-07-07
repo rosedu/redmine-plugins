@@ -1,0 +1,50 @@
+<%#= debug new_project_file_path %>
+<%#= debug new_project_upload_path %>
+<%#= debug @project%>
+
+<h2>Upload Forms
+
+<div class="contextual">
+<%= link_to "New upload",
+                          {:controller => 'uploads', :action => 'new', :project_id => @project},
+                          :class => 'icon icon-add',
+                          :onclick => 'Element.show("add-upload"); Form.Element.focus("upload_title"); return false;' %>
+</div>
+
+</h2>
+
+<div id="add-upload" style="display:none;">
+<h2><%= "New Upload" %></h2>
+<% form_tag({:controller => 'uploads', :action => 'create', :project_id => @project, :proj_id => @project.id }, :class => "tabular", :multipart => true) do %>
+<%= render :partial => 'form' %>
+<div class="box">
+</div>
+<%= submit_tag l(:button_create) %>
+<%= link_to l(:button_cancel), "#", :onclick => 'Element.hide("add-upload")' %>
+<% end %>
+</div>
+
+<% if @up_forms.blank? %>
+   <p>No forms to display</p> 
+<% else %>
+   <ul id = "upload_forms">
+   <% @up_forms.each do |uf| %>
+     <li>
+       <p>
+         <%= uf.title.capitalize %>  |
+         <%= link_to "Edit", {:controller => 'uploads', :action => 'show', :id => uf.id, :project_id => @project} %> |         
+          <%= link_to "Delete", {:controller => 'uploads', :action => 'destroy', :id => uf.id, :project_id => @project}, :method => :delete %> |
+	  <hr>
+       <p> 
+         <%= uf.created_on.utc.to_s%>
+       </p>
+       <p>
+         <%= uf.description %>
+       </p>
+   <!--    <p> <%#= "Project :"+uf.project_id.to_s%> </p> -->
+     </li>
+   <% end %>
+<% end %>
+
+<% #= debug @uploads %>
+<% #= @uploads.inspect %>

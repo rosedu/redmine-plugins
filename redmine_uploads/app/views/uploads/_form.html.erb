@@ -1,0 +1,15 @@
+<%#= debug @upload_form %>
+
+<%= error_messages_for 'upload' %>
+<div class="box">
+<!--[form:document]-->
+
+<p><label for="upload_title"><%=l(:field_title)%> <span class="required">*</span></label>
+<%= text_field 'upload', 'title', :size => 60 %></p>
+
+<p><label for="upload_description"><%=l(:field_description)%></label>
+<%= text_area 'upload', 'description', :cols => 60, :rows => 15, :class => 'wiki-edit' %></p>
+</div>
+
+<%= wikitoolbar_for 'upload_description' %>
+
