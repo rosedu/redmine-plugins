@@ -1,0 +1,39 @@
+<div style="float:right;">
+<%= link_to 'New Feedback', {:controller => 'feedbacks', :action => 'create', :project_id => @project, :proj_id => @project.id},
+                        :class => 'icon icon-add',
+			:onclick => 'Element.show("add-feedback"); Form.Element.focus("feedback_title"); return false;' %>
+</div>
+<div id="add-feedback" style="display:none;">
+<h2>New Feedback</h2>
+<% form_tag({:controller => 'feedbacks', :action => 'create',:project_id => @project ,:proj_id => @project.id}, :class => "tabular", :multipart => true)  do %>
+	<div class="box">
+        <!--[form:feedback]-->
+        <p><label for="feedback_title"><%=l(:field_title)%> <span class="required">*</span></label>
+        <%= text_field 'feedback', 'title', :size => 60 %></p>
+
+        <p><label for="feedback_description"><%=l(:field_description)%></label>
+        <%= text_area 'feedback', 'description', :cols => 60, :rows => 15, :class => 'wiki-edit' %></p>
+        <!--[eoform:document]-->
+        </div>
+
+	<%= submit_tag l(:button_create) %>
+	<%= link_to l(:button_cancel), "#", :onclick => 'Element.hide("add-feedback")' %>
+<% end %>
+</div>
+
+
+
+
+<h2>Feedback List</h2>
+
+<% if @feedbacks.empty? %><p class="nodata">No feedbacks to display.</p><% end %>
+
+<% @feedbacks.each do |feedback| %>
+    <h4><%= link_to h(feedback.title), :controller => 'feedbacks', :action => 'show', :id => feedback, :project_id =>@project %></h4>
+<p><em><%= format_time(feedback.created_on) %></em></p>
+
+<div class="wiki">
+	<%= textilizable(truncate_lines(feedback.description)) %>
+</div>
+<% end %>
+

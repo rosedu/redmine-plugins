@@ -1,0 +1,16 @@
+<%= debug @project %>
+<h2>Feedback</h2>
+
+<% form_tag({:action => 'edit', :id => @feedback, :project_id => @project}, :method => :post, :class => "tabular") do %>
+  <div class="box">
+  <!--[form:feedback]-->
+  <p><label for="feedback_title"><%=l(:field_title)%> <span class="required">*</span></label>
+  <%= text_field 'feedback', 'title', :size => 60 %></p>
+
+  <p><label for="feedback_description"><%=l(:field_description)%></label>
+  <%= text_area 'feedback', 'description', :cols => 60, :rows => 15, :class => 'wiki-edit' %></p>
+  <!--[eoform:feedback]-->
+  </div>
+
+  <%= submit_tag l(:button_save) %>
+<% end %>

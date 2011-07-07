@@ -1,0 +1,38 @@
+
+<div class="contextual">
+<%= link_to l(:button_edit), {:controller => 'feedbacks', :action => 'edit', :id => @feedback, :project_id => @project},  :class => 'icon icon-edit', :accesskey => accesskey(:edit) %>
+<%= link_to l(:button_delete), {:controller => 'feedbacks', :action => 'destroy', :id => @feedback, :project_id => @project}, :confirm => l(:text_are_you_sure), :method => :delete, :class => 'icon icon-del' %>
+</div>
+
+<h2><%=@feedback.title %></h2>
+
+<p><em><%= format_date @feedback.created_on %></em></p>
+<div class="wiki">
+<%= textilizable @feedback.description %>
+</div>
+
+<div class="contextual">
+<%= link_to 'Add Question', {:controller => 'feedbacks', :action => 'add_q', :project_id => @project, :proj_id => @project.id},
+                        :class => 'icon icon-add',
+                        :onclick => 'Element.show("add-question");  return false;' %>
+
+</div>
+<div id="add-question" style="display:none;">
+<h2>New Question</h2>
+Choose a type:<br />
+ <% form_tag({}, :method => :get) do %>
+    <label><%= radio_button_tag 'type', 'yes/no', (@qtype == 'yes/no') %>YES/NO Question </label><br />
+    <label><%= radio_button_tag 'type', 'multiple', (@qtype == 'multiple') %> Multiple choice</label><br />
+        <% end %>   
+<% form_tag({:controller => 'feedbacks', :action => 'add_q',:project_id => @project ,:proj_id => @project.id, :type => @qtype}, :class => "tabular", :multipart => true)  do %>
+       <!-- <div class="box">-->
+  
+	<!--</div> -->
+
+        <%= submit_tag l(:button_create) %>
+        <%= link_to l(:button_cancel), "#", :onclick => 'Element.hide("add-feedback")' %>
+<% end %>
+</div>
+
+
+<h2>Feedback Content</h2>
