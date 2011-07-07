@@ -31,9 +31,9 @@
    <% @up_forms.each do |uf| %>
      <li>
        <p>
-         <%= uf.title.capitalize %>  |
-         <%= link_to "Edit", {:controller => 'uploads', :action => 'show', :id => uf.id, :project_id => @project} %> |         
-          <%= link_to "Delete", {:controller => 'uploads', :action => 'destroy', :id => uf.id, :project_id => @project}, :method => :delete %> |
+         <%= link_to uf.title.capitalize, {:controller => 'uploads', :action => 'show', :id => uf.id, :project_id => @project} %> 
+         <%#= link_to "Edit", {:controller => 'uploads', :action => 'show', :id => uf.id, :project_id => @project} %> 
+          <%#= link_to "Delete", {:controller => 'uploads', :action => 'destroy', :id => uf.id, :project_id => @project}, :method => :delete %>
 	  <hr>
        <p> 
          <%= uf.created_on.utc.to_s%>

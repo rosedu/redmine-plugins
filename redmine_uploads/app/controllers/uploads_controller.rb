@@ -36,6 +36,11 @@ class UploadsController < ApplicationController
 #   render :text => @upload_form.to_s  
    end
 
+  def edit
+   @upload = UploadForm.find(params[:id])
+  end
+
+
   def new
   end
  
@@ -70,7 +75,7 @@ class UploadsController < ApplicationController
    if request.post? and @upload.update_attributes(params[:upload])
        
      flash[:notice] =l(:notice_successful_update)
-     redirect_to :action => "index", :project_id => @project
+     redirect_to :action => "show", :id => params[:id], :project_id => @project
    end 
   end
  
