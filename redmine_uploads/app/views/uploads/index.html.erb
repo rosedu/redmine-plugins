@@ -27,13 +27,9 @@
 <% if @up_forms.blank? %>
    <p>No forms to display</p> 
 <% else %>
-   <ul id = "upload_forms">
    <% @up_forms.each do |uf| %>
-     <li>
        <p>
          <%= link_to uf.title.capitalize, {:controller => 'uploads', :action => 'show', :id => uf.id, :project_id => @project} %> 
-         <%#= link_to "Edit", {:controller => 'uploads', :action => 'show', :id => uf.id, :project_id => @project} %> 
-          <%#= link_to "Delete", {:controller => 'uploads', :action => 'destroy', :id => uf.id, :project_id => @project}, :method => :delete %>
 	  <hr>
        <p> 
          <%= uf.created_on.utc.to_s%>
@@ -41,8 +37,7 @@
        <p>
          <%= uf.description %>
        </p>
-   <!--    <p> <%#= "Project :"+uf.project_id.to_s%> </p> -->
-     </li>
+   <!--    <p> <%#= "Project :"+uf.project_id.to_s%> </p> -->     
    <% end %>
 <% end %>
 

@@ -2,6 +2,9 @@ class UploadsController < ApplicationController
   unloadable
   before_filter :find_project
 
+  helper :sort
+  include SortHelper
+
   def index
 #     render :text => "Hello World"
      @up_forms = UploadForm.find :all, :conditions => "project_id = #{@project.id}"
@@ -31,10 +34,23 @@ class UploadsController < ApplicationController
 #   render :text =>  @data_files.inspect 
 #    render :text => "Hello"
 
-   @upload = UploadForm.find(params[:id])
+    sort_init 'filename', 'asc'
+    sort_update 'filename' => "#{Attachment.table_name}.filename",
+                'created_on' => "#{Attachment.table_name}.created_on",
+                'size' => "#{Attachment.table_name}.filesize",
+                'downloads' => "#{Attachment.table_name}.downloads"
+
+
+   @upload_form = UploadForm.find(params[:id])
 #   @upload_form = UploadForm.find(params[:id].to_i)
 #   render :text => params.inspect
 #   render :text => @upload_form.to_s  
+ 
+   @files = @upload_form.attachments
+ 
+     
+#   render :text => @files.inspect 
+
    end
 
   def edit
@@ -52,28 +68,38 @@ class UploadsController < ApplicationController
   end
 
   def addFiles
-#       render :text => params[1.to_s][:description]
-#       render :text => params[:1].inspect
 
+
+#      render :text => params[1.to_s][:description]
+#      render :text => params[:1].inspect
 #      render :text => params[:attachments][1.to_s].inspect
-      
+#      render  :text => params[:attachments]["1"][:file].class
+
+#      render :text => params[:id]
+
       @attach = Attachment.new
-      @attach.container_id = 3
-      @attach.container_type = "Upload"      
+      @attach.container_id = params[:id]
+      @attach.container_type = "UploadForm"      
       @attach.file = params[:attachments]["1"][:file]
       @attach.author_id = User.current.id
       @attach.description = params[:attachments]["1"][:description] 
 
-      @attach.save!
+      @attach.container = UploadForm.find(11)
+#      @attach.attach_files(@project, params[:attachments]) 
 
-      redirect_to :action => "index"
-    
-#      if @attach.save!
-#          flash[:notice] = "File(s) uploaded successfully!"
-#          redirect_to :action => "index"
-#      else
-#          flash.now[:error] = "File(s) failed to upload!"
-#      end
+#     redirect_to :action => "index", :project_id => @project
+  
+      if @attach.save!
+          flash[:notice] = "File(s) uploaded successfully!"
+          redirect_to :action => "index", :project_id => @project
+      else
+          flash.now[:error] = "File(s) failed to upload!"
+      end
+#      rescue  
+#          flash[:warning] = "File Validation failed! Did you forget to specify a file?"
+#          redirect_to :action => "index", :project_id => @project
+ 	  #render :action => "show"
+     
 
   end
 
