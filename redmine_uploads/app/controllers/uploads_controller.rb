@@ -3,6 +3,7 @@ class UploadsController < ApplicationController
   before_filter :find_project
 
   def index
+#     render :text => "Hello World"
      @up_forms = UploadForm.find :all, :conditions => "project_id = #{@project.id}"
 
 #    render :text => "Hello world"
@@ -48,6 +49,32 @@ class UploadsController < ApplicationController
         @upload = UploadForm.find(params[:id])
         @upload.destroy
 	redirect_to :action => "index", :project_id => @project
+  end
+
+  def addFiles
+#       render :text => params[1.to_s][:description]
+#       render :text => params[:1].inspect
+
+#      render :text => params[:attachments][1.to_s].inspect
+      
+      @attach = Attachment.new
+      @attach.container_id = 3
+      @attach.container_type = "Upload"      
+      @attach.file = params[:attachments]["1"][:file]
+      @attach.author_id = User.current.id
+      @attach.description = params[:attachments]["1"][:description] 
+
+      @attach.save!
+
+      redirect_to :action => "index"
+    
+#      if @attach.save!
+#          flash[:notice] = "File(s) uploaded successfully!"
+#          redirect_to :action => "index"
+#      else
+#          flash.now[:error] = "File(s) failed to upload!"
+#      end
+
   end
 
   def create
