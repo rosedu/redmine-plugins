@@ -1,12 +1,37 @@
 class UploadsController < ApplicationController
-  unloadable
-  before_filter :find_project
+ #_
+#  before_filter :find_project_by_project_id
+#  before_filter :authorize
+  menu_item :uploads
 
   helper :sort
   include SortHelper
 
+################
+
+  default_search_scope :uploads
+#  model_object Upload
+  before_filter :find_project_by_project_id
+#  before_filter :find_model_object, :except => [:index, :show, :new]
+#  before_filter :find_project_from_association, :except => [:index, :show, :new]
+#  before_filter :authorize_global
+
+  helper :attachments
+
+#############
+
+
   def index
-#     render :text => "Hello World"
+
+#     render :text => User.current.allowed_to?({:controller => 'uploads', :action => 'index', :global => true}).to_s
+
+# allowed = User.current.allowed_to?({:controller => 'uploads', :action => 'index'}, @project || @projects, :global => false)
+
+# render :text => allowed.to_s 
+
+#	render_403 :message => :notice_not_authorized_archived_project
+
+#_    render :text => "Hello World"
      @up_forms = UploadForm.find :all, :conditions => "project_id = #{@project.id}"
 
 #    render :text => "Hello world"
@@ -28,30 +53,18 @@ class UploadsController < ApplicationController
    end
 
   def show  
-#    @upload = Upload.find(params[:id]) 
-#    render :text => "Hello World"
-#    @data_files = UploadForm.find(params[:id]).data_files
-#   render :text =>  @data_files.inspect 
-#    render :text => "Hello"
-
+    
     sort_init 'filename', 'asc'
-    sort_update 'filename' => "#{Attachment.table_name}.filename",
+    sort_update 'author' => "#{User.table_name}.firstname",
+                'filename' => "#{Attachment.table_name}.filename",
                 'created_on' => "#{Attachment.table_name}.created_on",
-                'size' => "#{Attachment.table_name}.filesize",
-                'downloads' => "#{Attachment.table_name}.downloads"
-
+                'size' => "#{Attachment.table_name}.filesize"
 
    @upload_form = UploadForm.find(params[:id])
-#   @upload_form = UploadForm.find(params[:id].to_i)
-#   render :text => params.inspect
-#   render :text => @upload_form.to_s  
  
-   @files = @upload_form.attachments
- 
-     
-#   render :text => @files.inspect 
-
-   end
+   @files = @upload_form.attachments.find(:all, :order => sort_clause, :joins => "LEFT JOIN users ON users.id = attachments.author_id")
+   
+  end
 
   def edit
    @upload = UploadForm.find(params[:id])
@@ -67,7 +80,21 @@ class UploadsController < ApplicationController
 	redirect_to :action => "index", :project_id => @project
   end
 
+
   def addFiles
+    #TODO change hard_coded number
+    container = UploadForm.find(11)
+    attachments = Attachment.attach_files(container, params[:attachments])
+#    render_attachment_warning_if_needed(container)
+
+    if !attachments.empty? && !attachments[:files].blank? && Setting.notified_events.include?('file_added')
+ #     Mailer.deliver_attachments_added(attachments[:files])
+    end
+#    redirect_to project_files_path(@project)
+ end
+
+
+  def addFiles2
 
 
 #      render :text => params[1.to_s][:description]

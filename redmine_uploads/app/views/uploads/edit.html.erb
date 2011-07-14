@@ -1,5 +1,6 @@
 <h2><%= "Edit Upload form" %></h2>
 
+
 <% form_tag({:controller => 'uploads', :action => 'update', :project_id => @project, :proj_id => @project.id }, :method => :post, :class => "tabular", :multipart => true) do %>
 
 <%= render :partial => 'form' %>
