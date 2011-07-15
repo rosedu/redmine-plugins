@@ -4,16 +4,15 @@ class UploadsController < ApplicationController
 #  before_filter :authorize
 
 #  default_search_scope :uploads  
-#  default_search_scope :documents
+  default_search_scope :documents
   menu_item :uploads
 
   helper :sort
   include SortHelper
-#  model_object UploadForm
+  model_object UploadForm
 #  model_object Document
 
   before_filter :find_project
-
 #  before_filter :find_project, :only => [:index, :new]
 #  before_filter :find_model_object, :except => [:index, :new] 
 #  before_filter :find_project_from_association, :except => [:index, :new]
@@ -166,15 +165,9 @@ class UploadsController < ApplicationController
  
   private
 
-
- def find_project2
-    @project = Project.find(params[:project_id])
-  rescue ActiveRecord::RecordNotFound
-    render_404
-  end
-
-
   def find_project
+#    render :text => params.inspect
+#    render :text => params.inspect
     if params.has_key? :project_id
       @project = Project.find(params[:project_id])
     elsif params.has_key? :id 
@@ -182,6 +175,11 @@ class UploadsController < ApplicationController
     else 
       render_404
     end
+
+#    @project = Project.find(UploadForm.find(:id).project_id)
+#    render :text => @project.inspect
+#  rescue ActiveRecord::RecordNotFound
+#    render_404
   end
  
 end

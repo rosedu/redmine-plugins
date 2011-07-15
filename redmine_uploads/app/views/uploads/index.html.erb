@@ -2,44 +2,33 @@
 <%#= debug new_project_upload_path %>
 <%#= debug @project%>
 
-<h2>Upload Forms
-
 <div class="contextual">
-<%= link_to "New upload",
+  <%= link_to_if_authorized l(:label_upload_new),
                           {:controller => 'uploads', :action => 'new', :project_id => @project},
                           :class => 'icon icon-add',
                           :onclick => 'Element.show("add-upload"); Form.Element.focus("upload_title"); return false;' %>
 </div>
 
-</h2>
 
 <div id="add-upload" style="display:none;">
-<h2><%= "New Upload" %></h2>
-<% form_tag({:controller => 'uploads', :action => 'create', :project_id => @project, :proj_id => @project.id }, :class => "tabular", :multipart => true) do %>
-<%= render :partial => 'form' %>
+  <h2><%= l(:label_upload_new) %></h2>
+  <% form_tag({:controller => 'uploads', :action => 'create', :project_id => @project, :proj_id => @project.id }, :class => "tabular", :multipart => true) do %>
+  <%= render :partial => 'form' %>
 <div class="box">
+
 </div>
-<%= submit_tag l(:button_create) %>
-<%= link_to l(:button_cancel), "#", :onclick => 'Element.hide("add-upload")' %>
-<% end %>
+  <%= submit_tag l(:button_create) %>
+  <%= link_to l(:button_cancel), "#", :onclick => 'Element.hide("add-upload")' %>
+  <% end %>
 </div>
 
+<h2><%= l(:label_upload_plural) %></h2>
+
 <% if @up_forms.blank? %>
-   <p>No forms to display</p> 
+   <p class="nodata"><%= l(:label_no_forms) %></p> 
 <% else %>
    <% @up_forms.each do |uf| %>
-       <p>
-         <%= link_to uf.title.capitalize, {:controller => 'uploads', :action => 'show', :id => uf.id, :project_id => @project} %> 
-	  <hr>
-       <p> 
-         <%= uf.created_on.utc.to_s%>
-       </p>
-       <p>
-         <%= uf.description %>
-       </p>
-   <!--    <p> <%#= "Project :"+uf.project_id.to_s%> </p> -->     
+      <%= render :partial => 'uploads/upload_form', :locals => { :uf => uf } %> 
    <% end %>
 <% end %>
 
-<% #= debug @uploads %>
-<% #= @uploads.inspect %>

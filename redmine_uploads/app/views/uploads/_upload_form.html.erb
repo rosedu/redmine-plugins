@@ -1,0 +1,12 @@
+<p>
+  <%= link_to h(uf.title.capitalize), {:controller => 'uploads', :action => 'show', :id => uf} %> 
+  <hr>
+<p>
+  <em>   
+  <%= format_time(uf.created_on) %>
+  </em>
+</p>
+<div class="wiki">
+  <%= textilizable(truncate_lines(uf.description)) %>
+</div>
+
