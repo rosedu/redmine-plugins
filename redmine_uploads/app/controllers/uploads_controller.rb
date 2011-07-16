@@ -28,7 +28,23 @@ class UploadsController < ApplicationController
 #    render :text => file_names.join
     current_timestamp = Time.new.to_time.to_i
 
-  render :text =>  "cd files/ ; tar -cvzf #{current_timestamp}_attachments.tar.gz #{ff}"
+#  render :text =>  "cd files/ ; tar -cvzf #{current_timestamp}_attachments.tar.gz #{ff}"
+
+  archive_name = "#{current_timestamp}_attachments.tar.gz"
+    
+  `cd files/ ; tar -cvzf #{archive_name} #{ff}; cd ..;`    
+
+#   render :text => "files/#{archive_name}"
+
+#   send_file "files/afile", :type => "text/x-nfo" , :disposition => 'attachment' 
+
+#  render :text => `pwd`
+
+   send_file "files/#{archive_name}", :type => "application/x-gzip", :stream => false
+
+  `rm files/#{archive_name} ;`
+
+#    redirect_to :show, :params => @up_form
 
 #     render :text => `pwd`
  #   render :text => file_names.to_s
