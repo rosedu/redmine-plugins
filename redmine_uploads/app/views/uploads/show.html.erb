@@ -28,7 +28,7 @@
   <tbody>
     <tr>
       <th colspan="6" align="left">
-        <%= link_to( l(:label_downloads_all), {:controller => 'uploads', :action => 'downloadAll', :id => 1}, :class => "icon icon-package") %>
+        <%= link_to_if_authorized ( l(:label_downloads_all), {:controller => 'uploads', :action => 'downloadAll', :id => @up_form}, :method => :get, :class => "icon icon-package") %>
       </th>
     </tr>
     <% @files.each do |file| %>
@@ -63,8 +63,7 @@
 <% else %>
   <%= submit_tag l(:button_add) %>
 <% end %>
-
-<% end %>
+  <% end %>
 
 
 

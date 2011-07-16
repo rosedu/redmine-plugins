@@ -9,11 +9,29 @@ class UploadsController < ApplicationController
   include SortHelper
 
   before_filter :find_project, :except => [:show, :destroy, :update, :lock, :edit]
-  before_filter :find_upload_form, :only => [:show, :destroy, :update, :lock, :edit]
+  before_filter :find_upload_form, :only => [:show, :destroy, :update, :lock, :edit, :downloadAll]
 
   before_filter :authorize
 
   def downloadAll
+
+#   render :text => @up_form.title
+  
+   if User.current.admin
+	   @files = @up_form.attachments.all(:joins => "LEFT JOIN users ON users.id = attachments.author_id")
+   else
+           @files = @up_form.attachments.all(:joins => "LEFT JOIN users ON users.id = attachments.author_id", :conditions => [ "author_id = ?", User.current.id ] )
+   end
+
+    file_names = @files.collect &:disk_filename
+    ff = file_names.join
+#    render :text => file_names.join
+    current_timestamp = Time.new.to_time.to_i
+
+  render :text =>  "cd files/ ; tar -cvzf #{current_timestamp}_attachments.tar.gz #{ff}"
+
+#     render :text => `pwd`
+ #   render :text => file_names.to_s
 
   end 
 
@@ -135,16 +153,10 @@ class UploadsController < ApplicationController
   private
 
 
- def find_project2
+ def find_project
     @project = Project.find(params[:project_id])
   rescue ActiveRecord::RecordNotFound
-    render_404
-  end
-
-
-  def find_project
-    @project = Project.find(params[:project_id])
-#    @up_form = UploadForm.new(:project => @project)
+#    render_404
   end
 
   def find_upload_form
@@ -153,14 +165,5 @@ class UploadsController < ApplicationController
    rescue ActiveRecord::RecordNotFound
      render :text => "No permission"
   end
-
-#    if params.has_key? :project_id
-#      @project = Project.find(params[:project_id])
-#    elsif params.has_key? :id 
-#      @project = Project.find(UploadForm.find(params[:id]).project_id)
-#    else 
-#      render_404
-#    end
-#  end
  
 end
