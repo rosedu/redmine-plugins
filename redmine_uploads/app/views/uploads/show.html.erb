@@ -1,18 +1,19 @@
 <div class="contextual">
-<%= link_to l(:button_edit), {:controller => 'uploads', :action => 'edit', :id => @upload_form, :project_id => @project}, :class => 'icon icon-edit', :accesskey => accesskey(:edit) %>
-<%= link_to l(:button_delete), {:controller => 'uploads', :action => 'destroy', :id => @upload_form, :project_id => @project}, :confirm => l(:text_are_you_sure), :method => :delete, :class => 'icon icon-del' %>
+  <%= link_to_if_authorized l(:button_edit), {:controller => 'uploads', :action => 'edit', :id => @upload_form}, :class => 'icon icon-edit', :accesskey => accesskey(:edit) %>
+  <%= link_to_if_authorized l(:button_delete), {:controller => 'uploads', :action => 'destroy', :id => @upload_form}, :confirm => l(:text_are_you_sure), :method => :delete, :class => 'icon icon-del' %>
 </div>
 
+<h2><%= h @upload_form.title %></h2>
 
-<h2><%=h @upload_form.title %></h2>
+<p>
+  <em>
+    <%= h format_date @upload_form.created_on %> 
+  </em>
+</p>
 
-<p><em><%=textilizable @upload_form.description %><br/>
-<%=h format_date @upload_form.created_on %> </em></p>
-
-<%#= project_uploads_path(@project) %>
-
-<%#= debug @files %>
-
+<div class="wiki">
+  <%= textilizable @upload_form.description %>
+</div>
 
 <table class="list files">
   <thead>
@@ -27,7 +28,7 @@
   <tbody>
     <tr>
       <th colspan="6" align="left">
-        <%= link_to( "Download All", {:controller => 'uploads', :action => 'download', :id => 1}, :class => "icon icon-package") %>
+        <%= link_to( l(:label_downloads_all), {:controller => 'uploads', :action => 'downloadAll', :id => 1}, :class => "icon icon-package") %>
       </th>
     </tr>
     <% @files.each do |file| %>
@@ -45,13 +46,18 @@
   </tbody>
 </table>
 
-<% html_title(l(:label_attachment_plural)) -%>
+<% html_title( l(:label_attachment_plural)) %>
 
 <div class="box">
-<% form_tag( {:controller => 'uploads', :action => 'addFiles', :project_id => @project} , :multipart => true, :class => "tabular") do %>
-
-<p><label><%=l(:label_attachment_plural)%></label><%= render :partial => 'attachments/form' %></p>
+  <% form_tag( {:controller => 'uploads', :action => 'addFiles', :project_id => @project} , :multipart => true, :class => "tabular") do %>
+  <p>
+    <label>
+      <%= l(:label_attachment_plural) %>
+    </label>
+    <%= render :partial => 'attachments/form' %>
+  </p>
 </div>
+
 <%= submit_tag l(:button_add) %>
 <% end %>
 

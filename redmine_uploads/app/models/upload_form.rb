@@ -1,6 +1,8 @@
 class UploadForm < ActiveRecord::Base
 #  unloadable
-  belongs_to :project, :polymorphic => true
+  belongs_to :project
+
+  attr_accessible :title, :description
 
   has_many :attachments, :foreign_key => "container_id", :as => 'container'
 #  acts_as_attachable :delete_permission => :manage_documents
@@ -10,9 +12,12 @@ class UploadForm < ActiveRecord::Base
 #  validates_length_of :title, :maximum => 60
   acts_as_searchable :columns => ['title', "#{table_name}.title"], :include => :project
 
+  acts_as_event :title => Proc.new {|o| "#{l(:label_upload)}: #{o.title}"},
+                :author => Proc.new {|o| (a = o.attachments.find(:first, :order => "#{Attachment.table_name}.created_on ASC")) ? a.author : nil },
+                :url => Proc.new {|o| {:controller => 'uploads', :action => 'show', :id => o.id}}
+
  
 #  named_scope :visible, lambda {|*args| {:include => :project, :conditions => Project.allowed_to_condition(args.shift || User.current, :view_uploads, *args) } }
-
 
 
   def visible?(user=User.current)

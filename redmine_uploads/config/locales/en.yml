@@ -2,6 +2,8 @@
 en:
   my_label: "My label"
   author:   "Author"
+  label_upload: "Upload"
   label_upload_new: "New upload"
   label_upload_plural: "Uploads"
   label_no_forms: "No forms to display"
+  label_downloads_all: "Download all"

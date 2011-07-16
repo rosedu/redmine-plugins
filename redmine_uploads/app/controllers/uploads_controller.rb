@@ -1,45 +1,32 @@
 class UploadsController < ApplicationController
- #_
-#  before_filter :find_project_by_project_id
-#  before_filter :authorize
 
-#  default_search_scope :uploads  
-#  default_search_scope :documents
-  menu_item :uploads
+  default_search_scope :uploadForms
+  menu_item :upload_forms
 
+# Include sort module
+  helper :attachments
   helper :sort
   include SortHelper
-#  model_object UploadForm
-#  model_object Document
 
-  before_filter :find_project
+  before_filter :find_project, :except => [:show, :destroy, :update, :lock, :edit]
+  before_filter :find_upload_form, :only => [:show, :destroy, :update, :lock, :edit]
 
-#  before_filter :find_project, :only => [:index, :new]
-#  before_filter :find_model_object, :except => [:index, :new] 
-#  before_filter :find_project_from_association, :except => [:index, :new]
 #  before_filter :authorize
-################
 
-#  model_object Upload
-#  before_filter :find_project_by_project_id
-#  before_filter :find_model_object, :except => [:index, :show, :new]
-#  before_filter :find_project_from_association, :except => [:index, :show, :new]
-#  before_filter :authorize_global
 
-  helper :attachments
+  def downloadAll
 
-#############
-
+  end 
 
   def index
 
-     @up_forms = UploadForm.find :all, :conditions => "project_id = #{@project.id}"
+    @up_forms = @project.upload_forms
+#     @up_forms = UploadForm.find :all, :conditions => "project_id = #{@project.id}"
 #    render :text => "Hello world"
 #    logger.info "==================== Start ======================"
 #    logger.debug "The object is #{@project}"
 #    RAILS_DEFAULT_LOGGER.debug @project
 #     render :text => @up_forms.inspect
-
   end
 
   def uploadFile
@@ -55,10 +42,6 @@ class UploadsController < ApplicationController
 
   def show 
 
-#     render :text => "Helllo"
-#    render :text => @project.to_s
-#    render :text => params.inspect
-    
     sort_init 'filename', 'asc'
     sort_update 'author' => "#{User.table_name}.firstname",
                 'filename' => "#{Attachment.table_name}.filename",
@@ -175,13 +158,24 @@ class UploadsController < ApplicationController
 
 
   def find_project
-    if params.has_key? :project_id
-      @project = Project.find(params[:project_id])
-    elsif params.has_key? :id 
-      @project = Project.find(UploadForm.find(params[:id]).project_id)
-    else 
-      render_404
-    end
+    @project = Project.find(params[:project_id])
+#    @up_form = UploadForm.new(:project => @project)
   end
+
+  def find_upload_form
+   @up_form = UploadForm.find(params[:id])
+   @project = @up_form.project
+   rescue ActiveRecord::RecordNotFound
+     render :text => "No permission"
+  end
+
+#    if params.has_key? :project_id
+#      @project = Project.find(params[:project_id])
+#    elsif params.has_key? :id 
+#      @project = Project.find(UploadForm.find(params[:id]).project_id)
+#    else 
+#      render_404
+#    end
+#  end
  
 end
