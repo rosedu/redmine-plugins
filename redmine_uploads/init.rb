@@ -21,7 +21,7 @@ Redmine::Plugin.register :redmine_uploads do
      permission :manage_uploads, {:uploads => [:edit, :update]}, :require => :member
      permission :delete_uploads, {:uploads => [:destroy]}, :require => :member
      permission :create_uploads, {:uploads => [:new, :create]}, :require => :member
-     permission :upload_files, {:uploads => [:uploadFile]}, :require => :loggedin
+     permission :upload_files, {:uploads => [:addFiles]}, :require => :loggedin
      permission :view_upload_forms  , {:uploads => [:index, :show]}
   end
 

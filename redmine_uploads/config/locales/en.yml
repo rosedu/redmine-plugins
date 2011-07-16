@@ -7,3 +7,5 @@ en:
   label_upload_plural: "Uploads"
   label_no_forms: "No forms to display"
   label_downloads_all: "Download all"
+  label_title_required: "Title(required)"
+  button_confirm_add: "This will delete any previously uploaded files. Are you sure you want to do this?"

@@ -4,15 +4,15 @@
 
 <div class="contextual">
   <%= link_to_if_authorized l(:label_upload_new),
-                          {:controller => 'uploads', :action => 'new', :project_id => @project},
-                          :class => 'icon icon-add',
-                          :onclick => 'Element.show("add-upload"); Form.Element.focus("upload_title"); return false;' %>
+                          {:action => 'new', :project_id => @project},
+                           :class => 'icon icon-add',
+                           :onclick => 'Element.show("add-upload"); Form.Element.focus("upload_title"); return false;' %>
 </div>
 
 
 <div id="add-upload" style="display:none;">
   <h2><%= l(:label_upload_new) %></h2>
-  <% form_tag({:controller => 'uploads', :action => 'create', :project_id => @project, :proj_id => @project.id }, :class => "tabular", :multipart => true) do %>
+  <% form_tag({:action => 'create'}, :class => "tabular", :multipart => true) do %>
   <%= render :partial => 'form' %>
 <div class="box">
 
@@ -27,8 +27,6 @@
 <% if @up_forms.blank? %>
    <p class="nodata"><%= l(:label_no_forms) %></p> 
 <% else %>
-   <% @up_forms.each do |uf| %>
-      <%= render :partial => 'uploads/upload_form', :locals => { :uf => uf } %> 
-   <% end %>
+  <%= render :partial => 'upload_form', :collection => @up_forms%> 
 <% end %>
 

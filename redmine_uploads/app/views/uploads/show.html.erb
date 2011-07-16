@@ -58,7 +58,12 @@
   </p>
 </div>
 
-<%= submit_tag l(:button_add) %>
+<% if !@files.blank? %>
+  <%= submit_tag l(:button_add), :confirm => l(:button_confirm_add) %> 
+<% else %>
+  <%= submit_tag l(:button_add) %>
+<% end %>
+
 <% end %>
 
 

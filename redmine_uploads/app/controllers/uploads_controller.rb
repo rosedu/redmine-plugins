@@ -11,8 +11,7 @@ class UploadsController < ApplicationController
   before_filter :find_project, :except => [:show, :destroy, :update, :lock, :edit]
   before_filter :find_upload_form, :only => [:show, :destroy, :update, :lock, :edit]
 
-#  before_filter :authorize
-
+  before_filter :authorize
 
   def downloadAll
 
@@ -27,11 +26,10 @@ class UploadsController < ApplicationController
 #    logger.debug "The object is #{@project}"
 #    RAILS_DEFAULT_LOGGER.debug @project
 #     render :text => @up_forms.inspect
-  end
-
-  def uploadFile
-    post = DataFile.save(params[:upload]) 
-    render :text => "File has been uploaded successfully"
+  
+#   if request.xhr?  
+#      render :layout => false
+#   end
   end
 
    def cleanup
@@ -50,8 +48,14 @@ class UploadsController < ApplicationController
 
    @upload_form = UploadForm.find(params[:id])
  
-   @files = @upload_form.attachments.all(:order => sort_clause, :joins => "LEFT JOIN users ON users.id = attachments.author_id")
    
+#   render :text => User.current.admin.to_s
+   if User.current.admin
+	   @files = @upload_form.attachments.all(:order => sort_clause, :joins => "LEFT JOIN users ON users.id = attachments.author_id")
+   else
+	   @files = @upload_form.attachments.all(:order => sort_clause, :joins => "LEFT JOIN users ON users.id = attachments.author_id", :conditions => [ "author_id = ?", User.current.id ] )
+   end
+
   end
 
   def edit
@@ -71,70 +75,51 @@ class UploadsController < ApplicationController
 
   def addFiles
     #TODO change hard_coded number
-    container = UploadForm.find(11)
+    container = UploadForm.find(params[:id])
+    old_attachments = container.attachments.all(:conditions => ["author_id = ?", User.current.id] )
+#    render :text => old_attachments.class
+#    render :text => container.attachments.to_s
+   
+#    old_attachments.destroy
+    old_attachments.each do |old_att|
+      old_att.destroy
+    end
+
     attachments = Attachment.attach_files(container, params[:attachments])
+
+    redirect_to :back, :params => container
+
 #    render_attachment_warning_if_needed(container)
 
-    if !attachments.empty? && !attachments[:files].blank? && Setting.notified_events.include?('file_added')
+#    if !attachments.empty? && !attachments[:files].blank? && Setting.notified_events.include?('file_added')
  #     Mailer.deliver_attachments_added(attachments[:files])
-    end
-#    redirect_to project_files_path(@project)
+#    end
+ #   render :text => request.inspect
+#    redirect_to request.fullpath
  end
 
-
-  def addFiles2
-
-
-#      render :text => params[1.to_s][:description]
-#      render :text => params[:1].inspect
-#      render :text => params[:attachments][1.to_s].inspect
-#      render  :text => params[:attachments]["1"][:file].class
-
-#      render :text => params[:id]
-
-      @attach = Attachment.new
-      @attach.container_id = params[:id]
-      @attach.container_type = "UploadForm"      
-      @attach.file = params[:attachments]["1"][:file]
-      @attach.author_id = User.current.id
-      @attach.description = params[:attachments]["1"][:description] 
-
-      @attach.container = UploadForm.find(11)
-#      @attach.attach_files(@project, params[:attachments]) 
-
-#     redirect_to :action => "index", :project_id => @project
-  
-      if @attach.save!
-          flash[:notice] = "File(s) uploaded successfully!"
-          redirect_to :action => "index", :project_id => @project
-      else
-          flash.now[:error] = "File(s) failed to upload!"
-      end
-#      rescue  
-#          flash[:warning] = "File Validation failed! Did you forget to specify a file?"
-#          redirect_to :action => "index", :project_id => @project
- 	  #render :action => "show"
-     
-
-  end
 
   def create
 #    render :text => params.inspect
 #    render :text =>  params[:project_id]
 #    render :text => "Hello"
-    @up_form = UploadForm.new
+    @up_form = @project.upload_forms.build
 
     @up_form.title = params[:upload][:title]    
     @up_form.description = params[:upload][:description]
     @up_form.created_on = Time.now
-    @up_form.project_id = params[:proj_id].to_i    
+#    @up_form.project = @project    
 
-    if  @up_form.save!
-       flash[:notice] = "Upload form created !"
+    if request.post? and @up_form.save
+#       render_attachment_warning_if_needed(@upload)
+       flash[:notice] = l(:notice_successful_create)
        redirect_to :action => "index"
-    else   
-       flash.now[:error] = "Upload form was not created !"
+    else
+       render_error({:message => "Name required", :status => 403})
+#        render :text => @up_form.error_message
     end
+#    rescue 
+#       render_404
   end
 
   def update

@@ -2,9 +2,9 @@ class UploadForm < ActiveRecord::Base
 #  unloadable
   belongs_to :project
 
-  attr_accessible :title, :description
+#  attr_accessible :title, :description
 
-  has_many :attachments, :foreign_key => "container_id", :as => 'container'
+  has_many :attachments, :foreign_key => "container_id", :as => 'container', :dependent => :destroy
 #  acts_as_attachable :delete_permission => :manage_documents
 #  acts_as_activity_provider :find_options => {:include => :project}
   
@@ -16,6 +16,10 @@ class UploadForm < ActiveRecord::Base
                 :author => Proc.new {|o| (a = o.attachments.find(:first, :order => "#{Attachment.table_name}.created_on ASC")) ? a.author : nil },
                 :url => Proc.new {|o| {:controller => 'uploads', :action => 'show', :id => o.id}}
 
+
+  validates_uniqueness_of :title
+  validates_presence_of :project, :title
+  validates_length_of :title, :maximum => 60
  
 #  named_scope :visible, lambda {|*args| {:include => :project, :conditions => Project.allowed_to_condition(args.shift || User.current, :view_uploads, *args) } }
 
@@ -33,9 +37,13 @@ class UploadForm < ActiveRecord::Base
     true
  end 
 
+ def unsaved_attachments
+   true
+ end
+
   def after_initialize
     if new_record?
-      self.category ||= DocumentCategory.default
+#      self.category ||= DocumentCategory.default
     end
   end
 
