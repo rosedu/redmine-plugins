@@ -17,7 +17,11 @@
   <%= textilizable @upload_form.description %>
 </div>
 
-<%= link_to_if_authorized ( l(:label_downloads_all), {:action => 'downloadAll', :id => @up_form}, :class => "icon icon-package") %>
+<hr>
+
+<b>
+  <%= link_to_if_authorized ( l(:label_downloads_all), {:action => 'downloadAll', :id => @up_form}, :class => "icon icon-package") %>
+</b>
 
 <table class="list files">
   <thead>

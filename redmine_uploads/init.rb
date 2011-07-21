@@ -1,8 +1,6 @@
 require 'redmine'
 require 'dispatcher'
 
-#ActiveRecord::Base.send(:include, MyPlugin)
-
 Dispatcher.to_prepare do
   require_dependency 'project'
   require 'redmine_uploads/patch_redmine_classes'
@@ -12,10 +10,10 @@ end
 Redmine::Plugin.register :redmine_uploads do
   name 'Uploads plugin for Redmine'
   author 'Tudor Cornea'
-  description 'This is a plugin for Redmine'
+  description 'Redmine plugin used for managing upload forms'
   version '0.0.1'
-
-#  permission :uploads, {:uploads => [:show_uploads, :upload_files]}, :public => false
+# url ''
+# author_url ''
 
   project_module :uploads do
      permission :manage_uploads, {:uploads => [:edit, :update]}, :require => :member
@@ -28,7 +26,6 @@ Redmine::Plugin.register :redmine_uploads do
   menu :project_menu, :uploads, {:controller => 'uploads', :action => 'index'},   {:caption => 'Uploads', :after => :activity, :param => :project_id }
 
 
-#  activity_provider :uploads, :default => false, :class_name => ['Upload', 'UserUploads']
 end
 
 Redmine::Search.map do |search|
