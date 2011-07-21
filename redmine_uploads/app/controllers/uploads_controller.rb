@@ -81,9 +81,8 @@ class UploadsController < ApplicationController
   end
 
   def edit
-   @upload = UploadForm.find(params[:id])
+    @upload = UploadForm.find(params[:id])
   end
-
 
   def new
   end
@@ -138,7 +137,7 @@ class UploadsController < ApplicationController
        flash[:notice] = l(:notice_successful_create)
        redirect_to :action => "index"
     else
-      flash.now[:error] = "Name required"
+      flash[:error] = "Name required"
        redirect_to :back 
 #       render_error({:message => "Name required", :status => 403})
 #        render :text => @up_form.error_message
