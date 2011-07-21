@@ -17,6 +17,8 @@
   <%= textilizable @upload_form.description %>
 </div>
 
+<%= link_to_if_authorized ( l(:label_downloads_all), {:action => 'downloadAll', :id => @up_form}, :class => "icon icon-package") %>
+
 <table class="list files">
   <thead>
     <tr>     
@@ -30,7 +32,6 @@
   <tbody>
     <tr>
       <th colspan="6" align="left">
-        <%= link_to_if_authorized ( l(:label_downloads_all), {:controller => 'uploads', :action => 'downloadAll', :id => @up_form}, :method => :get, :class => "icon icon-package") %>
       </th>
     </tr>
     <% @files.each do |file| %>
@@ -56,7 +57,7 @@
     <label>
       <%= l(:label_attachment_plural) %>
     </label>
-    <%= render :partial => 'attachments/form' %>
+    <%= render :partial => 'upload_file' %>
   </p>
 </div>
 

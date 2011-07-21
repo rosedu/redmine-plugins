@@ -126,6 +126,7 @@ class UploadsController < ApplicationController
 #    render :text =>  params[:project_id]
 #    render :text => "Hello"
     @up_form = @project.upload_forms.build
+    @document = @project.documents.build(params[:document])
 
     @up_form.title = params[:upload][:title]    
     @up_form.description = params[:upload][:description]
@@ -133,11 +134,13 @@ class UploadsController < ApplicationController
 #    @up_form.project = @project    
 
     if request.post? and @up_form.save
-#       render_attachment_warning_if_needed(@upload)
+       render_attachment_warning_if_needed(@up_form)
        flash[:notice] = l(:notice_successful_create)
        redirect_to :action => "index"
     else
-       render_error({:message => "Name required", :status => 403})
+    #   flash.now[:error] = "Name required"
+    #   redirect_to :back 
+#       render_error({:message => "Name required", :status => 403})
 #        render :text => @up_form.error_message
     end
 #    rescue 
