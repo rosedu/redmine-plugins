@@ -16,6 +16,7 @@ class UploadForm < ActiveRecord::Base
                 :author => Proc.new {|o| (a = o.attachments.find(:first, :order => "#{Attachment.table_name}.created_on ASC")) ? a.author : nil },
                 :url => Proc.new {|o| {:controller => 'uploads', :action => 'show', :id => o.id}}
 
+  acts_as_activity_provider :find_options => {:include => :project}
 
   validates_uniqueness_of :title
   validates_presence_of :project, :title

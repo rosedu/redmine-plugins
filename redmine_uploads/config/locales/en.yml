@@ -5,6 +5,7 @@ en:
   label_upload: "Upload"
   label_upload_new: "New upload"
   label_upload_edit: "Edit upload form"
+  label_upload_form_plural: "Uploads"
   label_upload_plural: "Uploads"
   label_no_forms: "No forms to display"
   label_downloads_all: "Download all"

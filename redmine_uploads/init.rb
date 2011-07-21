@@ -33,6 +33,8 @@ end
 
 Redmine::Search.map do |search|
   search.register :upload_forms
-#  search.register :workflows
 end
 
+Redmine::Activity.map do |activity|
+  activity.register :upload_forms
+end
