@@ -1,5 +1,4 @@
-
-<%= Time.now %>
+<%#= Time.now %>
 
 <div class="contextual">
   <%= link_to_if_authorized l(:button_edit), {:controller => 'uploads', :action => 'edit', :id => @upload_form}, :class => 'icon icon-edit', :accesskey => accesskey(:edit) %>

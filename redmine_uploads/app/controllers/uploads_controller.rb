@@ -14,41 +14,29 @@ class UploadsController < ApplicationController
   before_filter :authorize
 
   def downloadAll
-
-#   render :text => @up_form.title
-  
+ 
+   #If user is admin, he should see all the files 
    if User.current.admin
 	   @files = @up_form.attachments.all(:joins => "LEFT JOIN users ON users.id = attachments.author_id")
    else
            @files = @up_form.attachments.all(:joins => "LEFT JOIN users ON users.id = attachments.author_id", :conditions => [ "author_id = ?", User.current.id ] )
    end
 
-    file_names = @files.collect &:disk_filename
-    ff = file_names.join
-#    render :text => file_names.join
-    current_timestamp = Time.new.to_time.to_i
-
-#  render :text =>  "cd files/ ; tar -cvzf #{current_timestamp}_attachments.tar.gz #{ff}"
-
-  archive_name = "#{current_timestamp}_attachments.tar.gz"
+   #Gather the names of the files, separated by ' '
+   file_names = @files.collect(&:disk_filename).join ' '
+   current_timestamp = Time.new.to_time.to_i
+   archive_name = "#{current_timestamp}_attachments.tar.gz"
     
-  `cd files/ ; tar -cvzf #{archive_name} #{ff}; cd ..;`    
+   `cd files/ ; tar -cvzf #{archive_name} #{file_names}; cd ..;`    
 
-#   render :text => "files/#{archive_name}"
-
-#   send_file "files/afile", :type => "text/x-nfo" , :disposition => 'attachment' 
-
-#  render :text => `pwd`
-
+   #Disabled streaming. The whole file will be loaded into server, and 
+   #then sent
    send_file "files/#{archive_name}", :type => "application/x-gzip", :stream => false
 
-  `rm files/#{archive_name} ;`
+   #Clean up after send
+   `rm files/#{archive_name} ;`
 
-#    redirect_to :show, :params => @up_form
-
-#     render :text => `pwd`
- #   render :text => file_names.to_s
-
+#  redirect_to :show, :params => @up_form
   end 
 
   def index
@@ -162,7 +150,7 @@ class UploadsController < ApplicationController
    if request.post? and @upload.update_attributes(params[:upload])
        
      flash[:notice] =l(:notice_successful_update)
-     redirect_to :action => "show", :id => params[:id], :project_id => @project
+     redirect_to :action => "show", :id => params[:id]
    end 
   end
  

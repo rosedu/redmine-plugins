@@ -1,26 +1,10 @@
-<h2><%= "Edit Upload form" %></h2>
+<h2><%= l(:label_upload_edit) %></h2>
 
+<% form_tag({:controller => 'uploads', :action => 'update'}, :class => "tabular", :multipart => true) do %>
 
-<% form_tag({:controller => 'uploads', :action => 'update', :project_id => @project, :proj_id => @project.id }, :method => :post, :class => "tabular", :multipart => true) do %>
-
-<%= render :partial => 'form' %>
-
-<%= submit_tag l(:button_create) %>
-<%= link_to l(:button_cancel), :back %>
+  <%= render :partial => 'form' %>
+  <%= submit_tag l(:button_save) %>
+  <%= link_to l(:button_cancel), :back %>
 <% end %>
 
-<%#= link_to "Edit ", {:action => 'new'} %></p>
 
-<!--Add file -->
-
-<%= error_messages_for 'attachment' %>
-<div class="box">
-<% form_tag(project_files_path(@project), :multipart => true, :class => "tabular") do %>
-
-<p><label><%=l(:label_attachment_plural)%></label><%= render :partial => 'attachments/form' %></p>
-</div> 
-
-<%= submit_tag l(:button_add) %>
-<% end %> 
-
-<!--tabel -->
