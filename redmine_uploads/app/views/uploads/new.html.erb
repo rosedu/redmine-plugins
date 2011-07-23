@@ -1,28 +1,11 @@
-<%= error_messages_for 'document'%>
-<div class="contextual">
-  <%= link_to l(:label_upload_new),
-                          {:controller => 'uploads', :action => 'new'},
-                          :class => 'icon icon-add',
-                          :onclick => 'Element.show("add-upload"); Form.Element.focus("upload_title"); return false;' %>
-</div>
+<%#= error_messages_for 'up_form'%>
 
-<div id="add-upload" style="display:none;">
-  <h2>
-    <%= "New Upload" %>
-  </h2>
-  <% form_tag({:controller => 'uploads', :action => 'new'}, :class => "tabular", :multipart => true) do %>
-    <%= render :partial => 'documents/form' %>
-    <div class="box">
-      <p>
-        <label>
-          <%= l(:label_attachment_plural)%>
-        </label>
-        <%= render :partial => 'attachments/form' %>
-      </p>
-    </div>
+  <h2><%= l(:label_upload_new) %></h2>
+  <% form_tag({:action => 'create'}, :class => "tabular", :multipart => true) do %>
+  <%= render :partial => 'form' %>
+<div class="box">
+
+</div>
   <%= submit_tag l(:button_create) %>
-  <%= link_to l(:button_cancel), "#", :onclick => 'Element.hide("add-document")' %>
   <% end %>
-</div>
-
 

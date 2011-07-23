@@ -1,6 +1,7 @@
 <%#= debug new_project_file_path %>
 <%#= debug new_project_upload_path %>
 <%#= debug @project%>
+<%#= error_messages_for 'up_form'%>
 
 <div class="contextual">
   <%= link_to_if_authorized l(:label_upload_new),

@@ -9,11 +9,11 @@ class UploadsController < ApplicationController
   include SortHelper
 
   before_filter :find_project, :except => [:show, :destroy, :update, :lock, :edit]
-  before_filter :find_upload_form, :only => [:show, :destroy, :update, :lock, :edit, :downloadAll]
+  before_filter :find_upload_form, :only => [:show, :destroy, :update, :lock, :edit, :download_all]
 
-  before_filter :authorize
+   before_filter :authorize
 
-  def downloadAll
+  def download_all
  
    #If user is admin, he should see all the files 
    if User.current.admin
@@ -52,6 +52,8 @@ class UploadsController < ApplicationController
 #   if request.xhr?  
 #      render :layout => false
 #   end
+   render :layout => false if request.xhr?
+
   end
 
    def cleanup
@@ -68,15 +70,15 @@ class UploadsController < ApplicationController
                 'created_on' => "#{Attachment.table_name}.created_on",
                 'size' => "#{Attachment.table_name}.filesize"
 
-   @upload_form = UploadForm.find(params[:id])
- 
+    @upload_form = UploadForm.find(params[:id])
    
-#   render :text => User.current.admin.to_s
-   if User.current.admin
-	   @files = @upload_form.attachments.all(:order => sort_clause, :joins => "LEFT JOIN users ON users.id = attachments.author_id")
-   else
-	   @files = @upload_form.attachments.all(:order => sort_clause, :joins => "LEFT JOIN users ON users.id = attachments.author_id", :conditions => [ "author_id = ?", User.current.id ] )
-   end
+    @my_files = @upload_form.attachments.all(:order => sort_clause, :joins => "LEFT JOIN users ON users.id = attachments.author_id", :conditions => [ "author_id = ?", User.current.id ] )
+
+    if User.current.admin
+      @show_files = @upload_form.attachments.all(:order => sort_clause, :joins => "LEFT JOIN users ON users.id = attachments.author_id")
+    else
+      @show_files = @my_files 
+    end
 
   end
 
@@ -94,7 +96,7 @@ class UploadsController < ApplicationController
   end
 
 
-  def addFiles
+  def add_file
     #TODO change hard_coded number
     container = UploadForm.find(params[:id])
     old_attachments = container.attachments.all(:conditions => ["author_id = ?", User.current.id] )
@@ -105,6 +107,7 @@ class UploadsController < ApplicationController
     old_attachments.each do |old_att|
       old_att.destroy
     end
+
 
     attachments = Attachment.attach_files(container, params[:attachments])
 
@@ -133,12 +136,15 @@ class UploadsController < ApplicationController
 #    @up_form.project = @project    
 
     if request.post? and @up_form.save
-       render_attachment_warning_if_needed(@up_form)
+#       render_attachment_warning_if_needed(@up_form)
        flash[:notice] = l(:notice_successful_create)
        redirect_to :action => "index"
     else
-      flash[:error] = "Name required"
-       redirect_to :back 
+      # redirect_to :back
+#      flash[:error] = "Name required"
+        render "new"
+#        render :layout => false
+#       redirect_to :action => "new", :project_id => @project
 #       render_error({:message => "Name required", :status => 403})
 #        render :text => @up_form.error_message
     end
@@ -147,13 +153,15 @@ class UploadsController < ApplicationController
   end
 
   def update
-    @upload = UploadForm.find(params[:id])
+   
+   @upload = UploadForm.find(params[:id])
       
-   if request.post? and @upload.update_attributes(params[:upload])
+   if @upload.update_attributes(params[:upload])
        
      flash[:notice] =l(:notice_successful_update)
      redirect_to :action => "show", :id => params[:id]
    end 
+  #TODO
   end
  
   private

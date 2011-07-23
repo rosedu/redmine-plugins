@@ -1,6 +1,6 @@
 <h2><%= l(:label_upload_edit) %></h2>
 
-<% form_tag({:controller => 'uploads', :action => 'update'}, :class => "tabular", :multipart => true) do %>
+<% form_tag({:controller => 'uploads', :action => 'update'}, :class => "tabular", :method => :put, :multipart => true) do %>
 
   <%= render :partial => 'form' %>
   <%= submit_tag l(:button_save) %>

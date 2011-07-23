@@ -20,7 +20,7 @@
 <hr>
 
 <b>
-  <%= link_to_if_authorized( l(:label_downloads_all), {:action => 'downloadAll', :id => @up_form}, :class => "icon icon-package") %>
+  <%= link_to_if_authorized( l(:label_downloads_all), {:action => 'download_all', :id => @up_form}, :class => "icon icon-package") %>
 </b>
 
 <table class="list files">
@@ -38,7 +38,7 @@
       <th colspan="6" align="left">
       </th>
     </tr>
-    <% @files.each do |file| %>
+    <% @show_files.each do |file| %>
       <tr class="file <%= cycle("odd", "even") %>">
         <td class="author"><%= file.author.firstname %></td>
         <td class="filename"><%= link_to_attachment file, :download => true, :title => file.description %></td>
@@ -55,22 +55,26 @@
 
 <% html_title( l(:label_attachment_plural)) %>
 
-<div class="box">
-  <% form_tag( {:controller => 'uploads', :action => 'addFiles', :project_id => @project} , :multipart => true, :class => "tabular") do %>
-  <p>
-    <label>
-      <%= l(:label_attachment_plural) %>
-    </label>
-    <%= render :partial => 'upload_file' %>
-  </p>
-</div>
 
-<% if !@files.blank? %>
-  <%= submit_tag l(:button_add), :confirm => l(:button_confirm_add) %> 
-<% else %>
-  <%= submit_tag l(:button_add) %>
-<% end %>
+<% if User.current.allowed_to?(:upload_files, @project)  %>
+
+  <div class="box">
+    <% form_tag( {:controller => 'uploads', :action => 'add_file', :project_id => @project} , :multipart => true, :class => "tabular") do %>
+    <p>
+      <label>
+        <%= l(:label_attachment_plural) %>
+      </label>
+      <%= render :partial => 'upload_file' %>
+    </p>
+  </div>
+
+  <% if !@my_files.blank? %>
+    <%= submit_tag l(:button_add), :confirm => l(:button_confirm_add) %> 
+  <% else %>
+    <%= submit_tag l(:button_add) %>
   <% end %>
+    <% end %>
 
+<% end %>
 
 

@@ -18,11 +18,20 @@ class UploadForm < ActiveRecord::Base
   validates_presence_of :project, :title
   validates_length_of :title, :maximum => 60
  
-#  named_scope :visible, lambda {|*args| {:include => :project, :conditions => Project.allowed_to_condition(args.shift || User.current, :view_uploads, *args) } }
+   named_scope :visible, lambda {|*args| {:include => :project, :conditions => Project.allowed_to_condition(args.shift || User.current, :view_upload_forms, *args) } }
   def visible?(user=User.current)
-   false 
+   true 
   #  true #!user.nil? && user.allowed_to?(:view_documents, project)
   end
+
+#TODO
+ def attachments_visible?(user=User.current)
+    true
+ end
+
+ def attachments_deletable?(user=User.current)
+    true
+ end 
 
   def updated_on
     unless @updated_on
