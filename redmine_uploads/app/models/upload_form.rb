@@ -6,7 +6,7 @@ class UploadForm < ActiveRecord::Base
   
   acts_as_attachable :delete_permission => :delete_files
 
-  acts_as_searchable :columns => ['title', "#{table_name}.title"], :include => :project
+  acts_as_searchable :columns => ['title', "#{table_name}.description"], :include => :project
 
   acts_as_event :title => Proc.new {|o| "#{l(:label_upload)}: #{o.title}"},
                 :author => Proc.new {|o| (a = o.attachments.find(:first, :order => "#{Attachment.table_name}.created_on ASC")) ? a.author : nil },

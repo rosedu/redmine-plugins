@@ -1,4 +1,4 @@
--
--
--
-
+*Consider the possibility that an user can upload multiple files per upload form
+*More translations
+*Possibly improve the plugin by using rubyzip for archiving
+*Improve test cases
