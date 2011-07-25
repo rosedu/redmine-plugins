@@ -3,181 +3,137 @@ class UploadsController < ApplicationController
   default_search_scope :uploadForms
   menu_item :upload_forms
 
-# Include sort module
   helper :attachments
   helper :sort
   include SortHelper
 
-  before_filter :find_project, :except => [:show, :destroy, :update, :lock, :edit]
-  before_filter :find_upload_form, :only => [:show, :destroy, :update, :lock, :edit, :download_all]
+  #For these actions, the project will be taken from params[:project_id]
+  before_filter :find_project, :except => [:show, :destroy, :update, :lock, :edit, :download_all, :add_file]
+  #For these actions, the project will be taken from the association with UploadForm
+  before_filter :find_upload_form, :only => [:show, :destroy, :update, :lock, :edit, :download_all, :add_file]
 
-   before_filter :authorize
+  before_filter :authorize
 
-  def download_all
- 
-   #If user is admin, he should see all the files 
-   if User.current.admin
-	   @files = @up_form.attachments.all(:joins => "LEFT JOIN users ON users.id = attachments.author_id")
-   else
-           @files = @up_form.attachments.all(:joins => "LEFT JOIN users ON users.id = attachments.author_id", :conditions => [ "author_id = ?", User.current.id ] )
-   end
-
-   #Gather the names of the files, separated by ' '
-   file_names = @files.collect(&:disk_filename).join ' '
-   current_timestamp = Time.new.to_time.to_i
-   archive_name = "#{current_timestamp}_attachments.tar.gz"
-    
-   `cd files/ ; tar -cvzf #{archive_name} #{file_names}; cd ..;`    
-
-   #Disabled streaming. The whole file will be loaded into server, and 
-   #then sent
-   send_file "files/#{archive_name}", :type => "application/x-gzip", :stream => false
-
-   #Clean up after send
-   `rm files/#{archive_name} ;`
-
-#  redirect_to :show, :params => @up_form
-  end 
-
+  #Displays a list with all of the upload forms
   def index
-
-    @up_forms = @project.upload_forms
-#     @up_forms = UploadForm.find :all, :conditions => "project_id = #{@project.id}"
-#    render :text => "Hello world"
-#    logger.info "==================== Start ======================"
-#    logger.debug "The object is #{@project}"
-#    RAILS_DEFAULT_LOGGER.debug @project
-#     render :text => @up_forms.inspect
-  
-#   if request.xhr?  
-#      render :layout => false
-#   end
-   render :layout => false if request.xhr?
-
+    @upload_forms = @project.upload_forms
+    render :layout => false if request.xhr?
   end
 
-   def cleanup
-    File.delete("#{RAILS_ROOT}/dirname/#{@filename}") 
-            if File.exist?("#{RAILS_ROOT}/dirname/#{@filename}")
-            end
-   end
-
-  def show 
-
+  #Displays the properties of a selected upload form
+  def show
+    #Initialize sorting helper
     sort_init 'filename', 'asc'
     sort_update 'author' => "#{User.table_name}.firstname",
                 'filename' => "#{Attachment.table_name}.filename",
                 'created_on' => "#{Attachment.table_name}.created_on",
                 'size' => "#{Attachment.table_name}.filesize"
 
-    @upload_form = UploadForm.find(params[:id])
-   
+    #The current user's uploaded files
     @my_files = @upload_form.attachments.all(:order => sort_clause, :joins => "LEFT JOIN users ON users.id = attachments.author_id", :conditions => [ "author_id = ?", User.current.id ] )
 
     if User.current.admin
       @show_files = @upload_form.attachments.all(:order => sort_clause, :joins => "LEFT JOIN users ON users.id = attachments.author_id")
     else
-      @show_files = @my_files 
+      @show_files = @my_files
     end
-
   end
 
-  def edit
-    @upload = UploadForm.find(params[:id])
-  end
-
+  #Displays a html form for creating a new upload
   def new
   end
- 
-  def destroy
-        @upload = UploadForm.find(params[:id])
-        @upload.destroy
-	redirect_to :action => "index", :project_id => @project
+
+  #Displays a html form for edit-ing an existing upload form
+  def edit
   end
 
-
-  def add_file
-    #TODO change hard_coded number
-    container = UploadForm.find(params[:id])
-    old_attachments = container.attachments.all(:conditions => ["author_id = ?", User.current.id] )
-#    render :text => old_attachments.class
-#    render :text => container.attachments.to_s
-   
-#    old_attachments.destroy
-    old_attachments.each do |old_att|
-      old_att.destroy
+  #Creates a new upload form
+  def create
+    #Initialize new upload form
+    @upload_form = @project.upload_forms.build do |uf|
+      uf.title = params[:upload_form][:title]
+      uf.description = params[:upload_form][:description]
+      uf.created_on = Time.now
     end
 
-
-    attachments = Attachment.attach_files(container, params[:attachments])
-
-    redirect_to :back, :params => container
-
-#    render_attachment_warning_if_needed(container)
-
-#    if !attachments.empty? && !attachments[:files].blank? && Setting.notified_events.include?('file_added')
- #     Mailer.deliver_attachments_added(attachments[:files])
-#    end
- #   render :text => request.inspect
-#    redirect_to request.fullpath
- end
-
-
-  def create
-#    render :text => params.inspect
-#    render :text =>  params[:project_id]
-#    render :text => "Hello"
-    @up_form = @project.upload_forms.build
-    @document = @project.documents.build(params[:document])
-
-    @up_form.title = params[:upload][:title]    
-    @up_form.description = params[:upload][:description]
-    @up_form.created_on = Time.now
-#    @up_form.project = @project    
-
-    if request.post? and @up_form.save
-#       render_attachment_warning_if_needed(@up_form)
+    if request.post? and @upload_form.save
        flash[:notice] = l(:notice_successful_create)
        redirect_to :action => "index"
     else
-      # redirect_to :back
-#      flash[:error] = "Name required"
-        render "new"
-#        render :layout => false
-#       redirect_to :action => "new", :project_id => @project
-#       render_error({:message => "Name required", :status => 403})
-#        render :text => @up_form.error_message
+       render "new"
     end
-#    rescue 
-#       render_404
   end
 
+  #Updates an existing upload form
   def update
-   
-   @upload = UploadForm.find(params[:id])
-      
-   if @upload.update_attributes(params[:upload])
-       
-     flash[:notice] =l(:notice_successful_update)
-     redirect_to :action => "show", :id => params[:id]
-   end 
-  #TODO
+    if @upload_form.update_attributes(params[:upload_form])
+      flash[:notice] =l(:notice_successful_update)
+      redirect_to :action => "show", :id => params[:id]
+    else 
+      render "edit"
+    end
+  end
+
+  #Deletes an existing upload form
+  def destroy
+        @upload_form.destroy
+        redirect_to :action => "index", :project_id => @project
+  end
+
+  #Creates an archive with all of the download-able files, 
+  #and sends it to the client's browser
+  def download_all
+    #If user is admin, he should see all the files uploaded for this form
+    if User.current.admin
+      @files = @upload_form.attachments.all(:joins => "LEFT JOIN users ON users.id = attachments.author_id")
+    else
+      @files = @upload_form.attachments.all(:joins => "LEFT JOIN users ON users.id = attachments.author_id", :conditions => [ "author_id = ?", User.current.id ] )
+    end
+
+    #Gather the names of the files, separated by ' '
+    file_names = @files.collect(&:disk_filename).join ' '
+    current_timestamp = Time.new.to_time.to_i
+    archive_name = "#{current_timestamp}_attachments.tar.gz"
+
+    #Creates an archive using the system bash    
+    `cd files/ ; tar -cvzf #{archive_name} #{file_names}; cd ..;`    
+
+    #Disabled streaming. The whole file will be loaded into the server, and 
+    #then sent. Consider adding 'x_sendfile => true' to the parameters list 
+    #if your server is apache, to speed-up downloads
+    send_file "files/#{archive_name}", :type => "application/x-gzip", :stream => false
+
+    #Clean up after send
+    `rm files/#{archive_name} ;`
+  end 
+
+  #Uploads a file for the current upload form 
+  def add_file
+    #Delete the old attachments  
+    Attachment.delete_all( ["container_id = ? AND author_id = ?", @upload_form.id, User.current.id] )
+
+    attachments = Attachment.attach_files(@upload_form, params[:attachments])
+    redirect_to :back, :params => @upload_form
   end
  
   private
 
-
- def find_project
+  #Finds the current project based on the parameter passed as 'project_id'
+  def find_project
     @project = Project.find(params[:project_id])
-  rescue ActiveRecord::RecordNotFound
-#    render_404
+    rescue ActiveRecord::RecordNotFound
+      render_404
+#     render :text => "No permission"
   end
 
+  #Finds the current upload form, and the current project, based
+  #on the association
   def find_upload_form
-   @up_form = UploadForm.find(params[:id])
-   @project = @up_form.project
-   rescue ActiveRecord::RecordNotFound
-     render :text => "No permission"
+    @upload_form = UploadForm.find(params[:id])
+    @project = @upload_form.project
+    rescue ActiveRecord::RecordNotFound
+      render_404
+#     render :text => "No permission"
   end
  
 end

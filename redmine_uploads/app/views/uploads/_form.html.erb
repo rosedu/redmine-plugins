@@ -1,21 +1,21 @@
-<%#= debug @upload_form %>
-<%= error_messages_for 'up_form' %>
+<%= error_messages_for 'upload_form' %>
+
 <div class="box">
   <p>
-    <label for="upload_title">
+    <label for="upload_form_title">
       <%= l(:label_title_required) %>
       <span class="required">*</span>
     </label>
-    <%= text_field 'upload', 'title', :size => 60 %>
+    <%= text_field 'upload_form', 'title', :size => 60 %>
   </p>
 
   <p>
-    <label for="upload_description">
+    <label for="upload_form_description">
       <%= l(:field_description) %>
     </label>
-    <%= text_area 'upload', 'description', :cols => 60, :rows => 15, :class => 'wiki-edit' %>
+    <%= text_area 'upload_form', 'description', :cols => 60, :rows => 15, :class => 'wiki-edit' %>
   </p>
 </div>
 
-<%= wikitoolbar_for 'upload_description' %>
+<%= wikitoolbar_for 'upload_form_description' %>
 

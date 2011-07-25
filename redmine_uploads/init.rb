@@ -16,16 +16,19 @@ Redmine::Plugin.register :redmine_uploads do
 # author_url ''
 
   project_module :uploads do
-     permission :manage_uploads, {:uploads => [:edit, :update]}, :require => :member
-     permission :delete_uploads, {:uploads => [:destroy]}, :require => :member
-     permission :create_uploads, {:uploads => [:new, :create]}, :require => :member
-     permission :upload_files, {:uploads => [:add_file, :download_all]}, :require => :loggedin
+     permission :manage_upload_forms, {:uploads => [:edit, :update]}, :require => :member
+     permission :delete_upload_forms, {:uploads => [:destroy]}, :require => :member
+     permission :create_upload_forms, {:uploads => [:new, :create]}, :require => :member
      permission :view_upload_forms  , {:uploads => [:index, :show]}
+     permission :delete_files, :require => :member
+     permission :download_files, :require => :member     
+     permission :download_all_files, {:uploads => [:download_all]}, :require => :loggedin
+     permission :upload_files, {:uploads => [:add_file]}, :require => :loggedin
   end
 
   menu :project_menu, :uploads, {:controller => 'uploads', :action => 'index'},   {:caption => 'Uploads', :after => :activity, :param => :project_id }
 
-
+  activity_provider :uploads, :default => false, :class_name => ['Uploads', 'UploadForms']
 end
 
 Redmine::Search.map do |search|

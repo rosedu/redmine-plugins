@@ -1,4 +1,3 @@
-<%#= Time.now %>
 
 <div class="contextual">
   <%= link_to_if_authorized l(:button_edit), {:controller => 'uploads', :action => 'edit', :id => @upload_form}, :class => 'icon icon-edit', :accesskey => accesskey(:edit) %>
@@ -19,17 +18,24 @@
 
 <hr>
 
-<b>
-  <%= link_to_if_authorized( l(:label_downloads_all), {:action => 'download_all', :id => @up_form}, :class => "icon icon-package") %>
-</b>
+<% if User.current.allowed_to?(:download_all_files, @project)  %>
+  <b>
+    <%= link_to( l(:label_download_all), {:action => 'download_all', :id => @upload_form}, :class => "icon icon-package") %>
+  </b>
+<% end%>
+
+<% if User.current.anonymous? %>
+   <b>Log on, in order to see the uploaded files!</b>
+   <br>
+<% end %>
 
 <table class="list files">
   <thead>
     <tr>     
-      <%= sort_header_tag('author', :caption => l(:author)) %>
-      <%= sort_header_tag('filename', :caption => l(:field_filename)) %>
+      <%= sort_header_tag('author', :caption => l(:label_author)) %>
+      <%= sort_header_tag('filename', :caption => l(:label_filename)) %>
       <%= sort_header_tag('created_on', :caption => l(:label_date), :default_order => 'desc') %>
-      <%= sort_header_tag('size', :caption => l(:field_filesize), :default_order => 'desc') %>
+      <%= sort_header_tag('size', :caption => l(:label_filesize), :default_order => 'desc') %>
       <th></th>
     </tr>
   </thead>
@@ -55,7 +61,6 @@
 
 <% html_title( l(:label_attachment_plural)) %>
 
-
 <% if User.current.allowed_to?(:upload_files, @project)  %>
 
   <div class="box">
@@ -69,7 +74,7 @@
   </div>
 
   <% if !@my_files.blank? %>
-    <%= submit_tag l(:button_add), :confirm => l(:button_confirm_add) %> 
+    <%= submit_tag l(:button_add), :confirm => l(:text_confirm_add_file) %> 
   <% else %>
     <%= submit_tag l(:button_add) %>
   <% end %>
