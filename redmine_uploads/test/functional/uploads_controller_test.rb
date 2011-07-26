@@ -76,48 +76,25 @@ class UploadsControllerTest < ActionController::TestCase
     )
   end
 
- def test_destroy
-#    puts Documents.all.inspect
-#    puts "----------------------------"
-#    puts UploadForm.all.inspect
-    
-#    u = UploadForm.find 1    
-#    u.project = Project.find 1
-#    u.save
-#     puts roles(:roles_001).inspect
-
- 
-#    @request.session[:user_id] = 1
-#    @resp = delete :destroy, :id => 1
-#    puts @response.to_s
-#    assert_redirected_to 'projects/ecookbook/uploads'
-#    assert_nil UploadForm.find_by_id(1)
-  end
-
-  def test_index
-#    puts Project.all.inspect
+  #Template & redirection tests
+  def test_destroy
     @request.session[:user_id] = 1
-    @pr = Project.find 1
-   # @pr.active = true
-#     puts "Context :" + @pr.active?.to_s
-#     puts "Con :" + @pr.allows_to?(:view_upload_forms).to_s
+    delete :destroy, :id => 1
+    assert_redirected_to '/projects/ecookbook/uploads'
+    assert_nil UploadForm.find_by_id(1)
+  end
   
-    puts enabled_modules(:enabled_modules_026).inspect
-
-    @resp = (get :index, :project_id => 'ecookbook')
- 
-    @us = User.current
-    puts "-------------------"
-    puts @us.allowed_to?(:view_upload_forms, @pr).to_s
-    puts @us.allowed_to?(:view_documents, @pr).to_s
-    puts User.current
-    puts "-------------------"
-
+  def test_index
+    get :index, :project_id => 'ecookbook'
     assert_response :success
     assert_template 'index'
   end
 
-  def test_truth
-    assert true
+  def test_new
+    @request.session[:user_id] = 1
+    get :new, :project_id => 'ecookbook'
+    assert_response :success
+    assert_template 'new'
   end
+
 end

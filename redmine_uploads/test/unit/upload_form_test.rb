@@ -5,16 +5,16 @@ class UploadFormTest < ActiveSupport::TestCase
 
   #Create a valid project object, used for testing
   def create_valid_project
-    proj = Project.new(:name => "TestProject", :description => "A Test Project" ,:is_public => true, :created_on => Time.now, :updated_on => Time.now,  :identifier => "testproj", :lft => 1, :rgt => 10)
-
-    assert proj.save
-    proj
+    if defined?(@proj).nil?
+      @proj = Project.new(:name => "TestProject", :description => "A Test Project" ,:is_public => true, :created_on => Time.now, :updated_on => Time.now,  :identifier => "testproj", :lft => 1, :rgt => 10)
+      assert @proj.save
+    end
+    @proj
   end
+
 
   #Tests the various relations that UploadForm has with other models
   def test_model_relations
-
-#    puts upload_forms(:uploads_001).inspect
 
     #Create a valid project
     @proj1 = create_valid_project
@@ -65,22 +65,35 @@ class UploadFormTest < ActiveSupport::TestCase
     assert @up_form4.save
   end
 
+
+  #Tests the correctness of the updated_on method
+  def test_updated_on_with_attachments
+    @up_form = UploadForm.find(1)
+    assert @up_form.attachments.any?
+    assert_equal @up_form.attachments.map(&:created_on).max, @up_form.updated_on
+  end
+
+  def test_updated_on_without_attachments
+    @up_form = UploadForm.find(2)
+    assert @up_form.attachments.empty?
+    assert_equal @up_form.created_on, @up_form.updated_on
+  end
+
+
+  #Tests the fact that all attachments are deleted when an Upload Form is deleted
   def test_deletes_attachments_on_destroy
 
-    puts Attachment.all.inspect
+     @up_form = UploadForm.find 1
+     #Get the ids of the attributes of the form
+     @att_ids = @up_form.attachments.map(&:id)
 
-    return true    
-    #Create a valid project
-    @proj1 = create_valid_project   
+     #Destroy the upload form(the attachments should be destroyed after this)
+     @up_form.destroy
 
-    #Tests [Attachment belongs_to Upload_Form trough container]
-    @up_form1 = @proj1.upload_forms.build :title => "Valid title"
-    assert @up_form1.save
-
-    @att_file = @up_form1.attachments.build
-    assert @att_file.container == @up_form1
-
- 
+     #The attachments should not be found, now
+     @att_ids.each do |id|
+       assert true unless Attachment.find_by_id(id)
+     end
   end
 
 end
