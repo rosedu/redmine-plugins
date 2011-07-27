@@ -1,8 +1,0 @@
-#custom routes for this plugin
-ActionController::Routing::Routes.draw do |map|
-  map.resources :projects, :only => [] do |project|
-   project.resources :uploads, :shallow => true,  :member => { :new => [:get], :update => [:post], :addFiles => [:post] , :downloadAll => [:get] }      do |upload| 
-    end   
-  end
-end
-
