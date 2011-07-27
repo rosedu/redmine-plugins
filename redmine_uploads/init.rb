@@ -11,7 +11,7 @@ Redmine::Plugin.register :redmine_uploads do
   name 'Uploads plugin for Redmine'
   author 'Tudor Cornea'
   description 'Redmine plugin used for managing upload forms'
-  version '0.0.1'
+  version '0.0.2'
 # url ''
 # author_url ''
 

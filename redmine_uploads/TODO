@@ -3,3 +3,4 @@
 *Possibly improve the plugin by using rubyzip for archiving
 *Improve & simplify test cases
 *Add named_scope querying methods to the model
+*Improve send_file 

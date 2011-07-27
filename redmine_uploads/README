@@ -36,7 +36,6 @@ A plugin for managing upload forms
 
 * Currently an user is allowed to upload a single file per upload form.
   (like a homework assignment on Moodle for ex.)
-  The second uploaded file will overwrite the first.
 
 * A privileged user can see all the uploaded files for a specific form,
   and download them.
