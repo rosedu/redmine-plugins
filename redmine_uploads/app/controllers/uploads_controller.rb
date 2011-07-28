@@ -53,6 +53,7 @@ class UploadsController < ApplicationController
     @upload_form = @project.upload_forms.build do |uf|
       uf.title = params[:upload_form][:title]
       uf.description = params[:upload_form][:description]
+      uf.multiple_uploads = params[:upload_form][:multiple_uploads]
       uf.created_on = Time.now
     end
 
@@ -110,7 +111,9 @@ class UploadsController < ApplicationController
   #Uploads a file for the current upload form 
   def add_file
     #Delete the old attachments  
-    Attachment.delete_all( ["container_id = ? AND author_id = ?", @upload_form.id, User.current.id] )
+    unless @upload_form.multiple_uploads
+      Attachment.delete_all( ["container_id = ? AND author_id = ?", @upload_form.id, User.current.id] )
+    end
 
     attachments = Attachment.attach_files(@upload_form, params[:attachments])
     redirect_to :back, :params => @upload_form

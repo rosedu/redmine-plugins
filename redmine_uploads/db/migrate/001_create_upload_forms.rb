@@ -4,6 +4,7 @@ class CreateUploadForms < ActiveRecord::Migration
       t.string :title, :limit => 60, :default => "", :null => false
       t.text :description
       t.integer :project_id, :default => 0, :null => false
+      t.boolean :multiple_uploads, :default => false, :null => false
       t.timestamp :created_on
     end
     add_index 'upload_forms',['created_on'],:name => "index_upload_forms_on_created_on"

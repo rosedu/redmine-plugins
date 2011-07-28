@@ -34,8 +34,9 @@ A plugin for managing upload forms
 
 * Activity provider
 
-* Currently an user is allowed to upload a single file per upload form.
+* By default, an user is allowed to upload a single file per upload form.
   (like a homework assignment on Moodle for ex.)
+  Since version 0.0.2, The user has the possibility to create an upload form wiht multiple file uploads option.
 
 * A privileged user can see all the uploaded files for a specific form,
   and download them.

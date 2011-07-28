@@ -73,12 +73,12 @@
     </p>
   </div>
 
-  <% if !@my_files.blank? %>
+  <% unless @my_files.blank? or  @upload_form.multiple_uploads %>
     <%= submit_tag l(:button_add), :confirm => l(:text_confirm_add_file) %> 
   <% else %>
     <%= submit_tag l(:button_add) %>
   <% end %>
-    <% end %>
+  <% end %>
 
 <% end %>
 
