@@ -7,6 +7,8 @@ class UploadsController < ApplicationController
   helper :sort
   include SortHelper
 
+  require 'zip/zip'
+
   #For these actions, the project will be taken from params[:project_id]
   before_filter :find_project, :except => [:show, :destroy, :update, :lock, :edit, :download_all, :add_file]
   #For these actions, the project will be taken from the association with UploadForm
@@ -86,26 +88,36 @@ class UploadsController < ApplicationController
   def download_all
     #If user is admin, he should see all the files uploaded for this form
     if User.current.admin
-      @files = @upload_form.attachments.all(:joins => "LEFT JOIN users ON users.id = attachments.author_id")
+      @atts = @upload_form.attachments.all(:joins => "LEFT JOIN users ON users.id = attachments.author_id")
     else
-      @files = @upload_form.attachments.all(:joins => "LEFT JOIN users ON users.id = attachments.author_id", :conditions => [ "author_id = ?", User.current.id ] )
+      @atts = @upload_form.attachments.all(:joins => "LEFT JOIN users ON users.id = attachments.author_id", :conditions => [ "author_id = ?", User.current.id ] )
     end
 
-    #Gather the names of the files, separated by ' '
-    file_names = @files.collect(&:disk_filename).join ' '
+    #Default root directory, where the files will be stored
+    files_root_path="files"
     current_timestamp = Time.new.to_time.to_i
-    archive_name = "#{current_timestamp}_attachments.tar.gz"
+    archive_name = "#{current_timestamp}_attachments.zip"
+    archive_path = File.join(files_root_path, archive_name)
+ 
+    #Create a zip file with all the attachments
+    Zip::ZipOutputStream::open(archive_path) {
+      |zip_file|
 
-    #Creates an archive using the system bash    
-    `cd files/ ; tar -cvzf #{archive_name} #{file_names}; cd ..;`    
+      #Add each individual file to the archive
+      @atts.each do |att|  
+        file_path = File.join(files_root_path, att.disk_filename)
+        zip_file.put_next_entry(att.filename)
+        zip_file.write File.new(file_path, "r").read
+      end
+     }
 
     #Disabled streaming. The whole file will be loaded into the server, and 
     #then sent. Consider adding 'x_sendfile => true' to the parameters list 
     #if your server is apache, to speed-up downloads
-    send_file "files/#{archive_name}", :type => "application/x-gzip", :stream => false
+    send_file archive_path, :type => "application/x-gzip", :stream => false
 
     #Clean up after send
-    `rm files/#{archive_name} ;`
+    File.delete(archive_path)
   end 
 
   #Uploads a file for the current upload form 

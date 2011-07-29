@@ -23,6 +23,10 @@ A plugin for managing upload forms
   In order to use it efficiently, make sure you set the correct permissions 
   for the roles under Administration => Roles & Permissions 
 
+  **Dependencies**
+    This plugin depends on the 'rubyzip' gem
+    You can install it by "sudo gem install rubyzip"
+
 2= Help
 
   For specific questions you can always visit the official Redmine forums
@@ -39,7 +43,7 @@ A plugin for managing upload forms
   Since version 0.0.2, The user has the possibility to create an upload form wiht multiple file uploads option.
 
 * A privileged user can see all the uploaded files for a specific form,
-  and download them.
+  and download an archive with all of them.
   The unprivileged user will see only the file(s) uploaded by him. 
     
 4= Translations

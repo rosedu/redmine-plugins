@@ -2,3 +2,4 @@
 
 0.0.2 -Added the possibility that an user can
        upload multiple files per form
+      -Uses rubyzip for archiving instead of tar
