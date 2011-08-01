@@ -8,11 +8,11 @@ Dispatcher.to_prepare do
 end
 
 Redmine::Plugin.register :redmine_uploads do
-  name 'Uploads plugin for Redmine'
+  name 'Redmine Upload Forms plugin'
   author 'Tudor Cornea'
   description 'Redmine plugin used for managing upload forms'
   version '0.0.2'
-# url ''
+  url 'https://projects.rosedu.org/projects/redmine-plugins'
 # author_url ''
 
   project_module :uploads do
