@@ -12,7 +12,7 @@
     <label for="upload_form_multiple_uploads">
       <%= "Multiple uploads "%> 
     </label>
-    <%= check_box 'upload_form', 'multiple_uploads'%>
+    <%= check_box 'upload_form', 'multiple_uploads', :disabled => !!@disable_multiple_uploads %>
   </p>
 
   <p>

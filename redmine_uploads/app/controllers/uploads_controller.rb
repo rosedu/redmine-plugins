@@ -47,6 +47,8 @@ class UploadsController < ApplicationController
 
   #Displays a html form for edit-ing an existing upload form
   def edit
+    #Will set enabled property in view to false 
+    @disable_multiple_uploads = true
   end
 
   #Creates a new upload form
