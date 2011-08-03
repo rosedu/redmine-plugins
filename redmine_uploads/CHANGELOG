@@ -3,3 +3,6 @@
 0.0.2 -Added the possibility that an user can
        upload multiple files per form
       -Uses rubyzip for archiving instead of tar
+      4.08.2011
+      -Solved a plugin loading bug which seems to appear only in development mode 
+       Modified init.rb, and added a few lines of code

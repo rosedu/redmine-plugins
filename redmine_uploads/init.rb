@@ -1,6 +1,14 @@
 require 'redmine'
 require 'dispatcher'
 
+# This plugin should be reloaded in development mode.
+# Solves common rails bug that occurs only in development mode
+# http://strd6.com/2009/04/cant-dup-nilclass-maybe-try-unloadable/
+if RAILS_ENV == 'development'
+  ActiveSupport::Dependencies.load_once_paths.reject!{|x| x =~ /^#{Regexp.escape(File.dirname(__FILE__))}/}
+end
+
+# Load the patch
 Dispatcher.to_prepare do
   require_dependency 'project'
   require 'redmine_uploads/patch_redmine_classes'
@@ -31,10 +39,12 @@ Redmine::Plugin.register :redmine_uploads do
   activity_provider :uploads, :default => false, :class_name => ['Uploads', 'UploadForms']
 end
 
+# Register the plugin for searching
 Redmine::Search.map do |search|
   search.register :upload_forms
 end
 
+# Register the plugin as activity provider
 Redmine::Activity.map do |activity|
   activity.register :upload_forms
 end
