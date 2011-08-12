@@ -21,7 +21,7 @@ Redmine::Plugin.register :redmine_uploads do
   author 'Tudor Cornea'
   description 'Redmine plugin used for managing upload forms'
   version '0.0.2'
-  url 'https://projects.rosedu.org/projects/redmine-plugins'
+  url 'https://projects.rosedu.org/projects/redmine-uploads'
 # author_url ''
 
   #Module permissions
